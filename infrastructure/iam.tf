@@ -12,6 +12,12 @@ resource "aws_iam_role" "lambda" {
       },
       "Effect": "Allow",
       "Sid": ""
+    },
+    {
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::127012818163:role/EMR_DefaultRole",
+      "Effect": "Allow",
+      "Sid": ""
     }
   ]
 }
