@@ -12,12 +12,6 @@ resource "aws_iam_role" "lambda" {
       },
       "Effect": "Allow",
       "Sid": "AssumeRole"
-    },
-    {
-      "Action": "iam:PassRole",
-      "Resource": "arn:aws:iam::127012818163:role/EMR_DefaultRole",
-      "Effect": "Allow",
-      "Sid": "PassRole"
     }
   ]
 }
@@ -33,7 +27,7 @@ EOF
 
 
 resource "aws_iam_policy" "lambda" {
-  name        = "IGTIAWSLambdaBasicExecutionRole"
+  name        = "IGTIAWSLambdaBasicExecutionRolePolicy"
   path        = "/"
   description = "Provides write permissions to CloudWatch Logs, S3 buckets and EMR Steps"
 
@@ -63,6 +57,11 @@ resource "aws_iam_policy" "lambda" {
                 "elasticmapreduce:*"
             ],
             "Resource": "*"
+        },
+        {
+          "Action": "iam:PassRole",
+          "Resource": "arn:aws:iam::127012818163:role/EMR_DefaultRole",
+          "Effect": "Allow"
         }
     ]
 }
