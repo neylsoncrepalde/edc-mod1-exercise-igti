@@ -1,7 +1,6 @@
 # Bootcamp Engenheiro(a) de Dados Cloud - IGTI - Módulo 1
 
 [![Test on PR](https://github.com/neylsoncrepalde/edc-mod1-exercise-igti/actions/workflows/test.yaml/badge.svg)](https://github.com/neylsoncrepalde/edc-mod1-exercise-igti/actions/workflows/test.yaml)
-
 [![Deploy](https://github.com/neylsoncrepalde/edc-mod1-exercise-igti/actions/workflows/deploy.yaml/badge.svg)](https://github.com/neylsoncrepalde/edc-mod1-exercise-igti/actions/workflows/deploy.yaml)
 
 ## Fundamentos de Arquitetura de Dados em Nuvem
