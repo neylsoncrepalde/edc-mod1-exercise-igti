@@ -11,13 +11,13 @@ resource "aws_iam_role" "lambda" {
         "Service": "lambda.amazonaws.com"
       },
       "Effect": "Allow",
-      "Sid": ""
+      "Sid": "AssumeRole"
     },
     {
       "Action": "iam:PassRole",
       "Resource": "arn:aws:iam::127012818163:role/EMR_DefaultRole",
       "Effect": "Allow",
-      "Sid": ""
+      "Sid": "PassRole"
     }
   ]
 }
