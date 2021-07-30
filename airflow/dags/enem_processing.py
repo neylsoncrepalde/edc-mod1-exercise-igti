@@ -5,9 +5,8 @@ from airflow.models import Variable
 
 aws_access_key_id = Variable.get("aws_access_key_id")
 aws_secret_access_key = Variable.get("aws_secret_access_key")
-sagemaker_role='arn:aws:iam::127012818163:role/service-role/AmazonSageMaker-ExecutionRole-20210518T105032'
 
-client = boto3.client("emr", region_name="us-east-1",
+client = boto3.client("emr", region_name="us-east-2",
                     aws_access_key_id=aws_access_key_id,
                     aws_secret_access_key=aws_secret_access_key)
 
@@ -34,11 +33,11 @@ def pipeline_enem():
     @task
     def emr_process_enem_data():
         cluster_id = client.run_job_flow(
-            Name='EMR-Ney-teste',
+            Name='EMR-Ney-IGTI',
             ServiceRole='EMR_DefaultRole',
             JobFlowRole='EMR_EC2_DefaultRole',
             VisibleToAllUsers=True,
-            LogUri='s3://datalake-dev-ney-127012818163/emr-logs',
+            LogUri='s3://datalake-ney-igti-edc-tf/emr-logs',
             ReleaseLabel='emr-6.3.0',
             Instances={
                 'InstanceGroups': [
@@ -57,10 +56,10 @@ def pipeline_enem():
                         'InstanceCount': 1,
                     }
                 ],
-                'Ec2KeyName': 'key_poc_deltalake',
+                'Ec2KeyName': 'ney-igti-teste',
                 'KeepJobFlowAliveWhenNoSteps': True,
                 'TerminationProtected': False,
-                'Ec2SubnetId': 'subnet-00ade3df1014cfef9'
+                'Ec2SubnetId': 'subnet-1df20360'
             },
 
             Applications=[{'Name': 'Spark'}],
@@ -99,25 +98,19 @@ def pipeline_enem():
                 }
             ],
 
-            BootstrapActions=[
-                {
-                    'Name': 'Install python libs',
-                    'ScriptBootstrapAction': {
-                        'Path': 's3://emr-code-127012818163/bootstrap/emr_btsp_install_python3_libs.sh',
-                    }
-                },
-            ],
-
             Steps=[{
                 'Name': 'Primeiro processamento do ENEM',
                 'ActionOnFailure': 'TERMINATE_CLUSTER',
                 'HadoopJarStep': {
                     'Jar': 'command-runner.jar',
                     'Args': ['spark-submit',
-                                '--master', 'yarn',
-                                '--deploy-mode', 'cluster',
-                                's3://emr-code-127012818163/pyspark/get_enem_data.py'
-                                ]
+                            '--packages', 'io.delta:delta-core_2.12:1.0.0', 
+                            '--conf', 'spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension', 
+                            '--conf', 'spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog', 
+                            '--master', 'yarn',
+                            '--deploy-mode', 'cluster',
+                            's3://datalake-ney-igti-edc-tf/emr-code/pyspark/01_delta_spark_insert.py'
+                        ]
                 }
             }],
         )
@@ -143,27 +136,30 @@ def pipeline_enem():
         return True
 
     @task
-    def write_base_analitica(cid: str, success_before: bool):
+    def upsert_delta(cid: str, success_before: bool):
         if success_before:
             newstep = client.add_job_flow_steps(
                 JobFlowId=cid,
                 Steps=[{
-                    'Name': 'Escreve base analitica',
+                    'Name': 'Upsert da tabela Delta',
                     'ActionOnFailure': "TERMINATE_CLUSTER",
                     'HadoopJarStep': {
                         'Jar': 'command-runner.jar',
                         'Args': ['spark-submit',
-                                 '--master', 'yarn',
-                                 '--deploy-mode', 'cluster',
-                                 's3://emr-code-127012818163/pyspark/write_ba.py'
-                                 ]
+                                '--packages', 'io.delta:delta-core_2.12:1.0.0', 
+                                '--conf', 'spark.sql.extensions=io.delta.sql.DeltaSparkSessionExtension', 
+                                '--conf', 'spark.sql.catalog.spark_catalog=org.apache.spark.sql.delta.catalog.DeltaCatalog', 
+                                '--master', 'yarn',
+                                '--deploy-mode', 'cluster',
+                                's3://datalake-ney-igti-edc-tf/emr-code/pyspark/02_delta_spark_upsert.py'
+                            ]
                     }
                 }]
             )
             return newstep['StepIds'][0]
 
     @task
-    def wait_emr_write_ba_step(cid: str, stepId: str):
+    def wait_upsert_delta(cid: str, stepId: str):
         waiter = client.get_waiter('step_complete')
 
         waiter.wait(
@@ -188,8 +184,8 @@ def pipeline_enem():
     # Encadeando a pipeline
     cluid = emr_process_enem_data()
     res_emr = wait_emr_step(cluid)
-    newstep = write_base_analitica(cluid, res_emr)
-    res_ba = wait_emr_write_ba_step(cluid, newstep)
+    newstep = upsert_delta(cluid, res_emr)
+    res_ba = wait_upsert_delta(cluid, newstep)
     res_ter = terminate_emr_cluster(res_ba, cluid)
 
 
