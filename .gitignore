@@ -3,3 +3,4 @@
 .terraform/
 .terraform.lock.hcl
 lambda_function_payload.zip
+airflow_variables.json
