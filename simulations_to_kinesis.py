@@ -10,7 +10,7 @@ client = boto3.client('firehose')
 def put_record(event):
     data = base64.b64encode( (json.dumps(event) + '\n').encode('utf-8') )
     response = client.put_record(
-        DeliveryStreamName='a3datasandbox-carlao-kinesis-stream',
+        DeliveryStreamName='igti-kinesis-firehose-s3-stream',
         Record = {
             'Data': data
         }
