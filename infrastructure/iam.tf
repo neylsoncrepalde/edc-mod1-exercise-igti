@@ -93,7 +93,8 @@ resource "aws_iam_policy" "firehose" {
             "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
-                "logs:PutLogEvents"
+                "logs:PutLogEvents",
+                "glue:*"
             ],
             "Resource": "*"
         },
