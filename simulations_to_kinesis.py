@@ -4,7 +4,7 @@ import base64
 from fake_web_events import Simulation
 
 
-client = boto3.client('firehose')
+client = boto3.client('firehose', region_name='us-east-2')
 
 
 def put_record(event):

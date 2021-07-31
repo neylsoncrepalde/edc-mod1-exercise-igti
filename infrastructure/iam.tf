@@ -109,7 +109,10 @@ resource "aws_iam_policy" "firehose" {
                 "s3:ListBucketMultipartUploads",
                 "s3:PutObject"
             ],
-            "Resource": "${aws_s3_bucket.stream.arn}"
+            "Resource": [
+              "${aws_s3_bucket.stream.arn}",
+              "${aws_s3_bucket.stream.arn}/*"
+            ]
         }
     ]
 }
