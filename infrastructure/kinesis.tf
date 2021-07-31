@@ -24,7 +24,7 @@ resource "aws_kinesis_firehose_delivery_stream" "extended_s3_stream" {
 
       schema_configuration {
         database_name = aws_glue_catalog_database.stream.name
-        role_arn      = aws_iam_role.glue_role.arn
+        role_arn      = aws_iam_role.firehose_role.arn
         table_name    = aws_glue_catalog_table.stream_table.name
       }
     }
