@@ -11,8 +11,7 @@ resource "aws_glue_catalog_table" "stream_table" {
   table_type = "EXTERNAL_TABLE"
 
   parameters = {
-    EXTERNAL              = "TRUE"
-    "parquet.compression" = "SNAPPY"
+    EXTERNAL = "TRUE"
   }
 
   storage_descriptor {
