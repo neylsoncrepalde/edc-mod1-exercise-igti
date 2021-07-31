@@ -21,7 +21,7 @@ Arquitetura da solução:
 
 Arquitetura da solução:
 
-...
+![kinesis](img/edc_mod1_delta-kinesis.png)
 
 ## 3 - Orquestração de Pipelines de Big Data com Airflow
 
