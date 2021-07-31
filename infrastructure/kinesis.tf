@@ -6,7 +6,7 @@ resource "aws_kinesis_firehose_delivery_stream" "extended_s3_stream" {
     role_arn   = aws_iam_role.firehose_role.arn
     bucket_arn = aws_s3_bucket.stream.arn
     prefix = "firehose/"
-    buffer_size = 1
+    buffer_size = 64
     buffer_interval = 60
     
     data_format_conversion_configuration {
