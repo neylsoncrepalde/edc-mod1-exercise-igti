@@ -8,7 +8,7 @@ resource "aws_glue_crawler" "stream" {
   role          = aws_iam_role.glue_role.arn
 
   s3_target {
-    path = "s3://${aws_s3_bucket.stream.bucket}"
+    path = "s3://${aws_s3_bucket.stream.bucket}/firehose/"
   }
 
   configuration = <<EOF
