@@ -1,6 +1,5 @@
 import boto3
 import json
-import base64
 from fake_web_events import Simulation
 
 
@@ -8,7 +7,7 @@ client = boto3.client('firehose', region_name='us-east-2')
 
 
 def put_record(event):
-    data = base64.b64encode( (json.dumps(event) + '\n').encode('utf-8') )
+    data = (json.dumps(event) + '\n').encode('utf-8') 
     response = client.put_record(
         DeliveryStreamName='igti-kinesis-firehose-s3-stream',
         Record = {
