@@ -13,7 +13,7 @@ spark = glueContext.spark_session
 job = Job(glueContext)
 job.init(args['JOB_NAME'], args)
 
-# Ler os dados do enem 2019
+# Ler os dados do enem 2020
 enem = (
     spark
     .read
@@ -21,7 +21,7 @@ enem = (
     .option("header", True)
     .option("inferSchema", True)
     .option("delimiter", ";")
-    .load("s3://datalake-ney-igti-edc/raw-data/enem/")
+    .load("s3://datalake-hrpp-igti-edc/raw-data/enem/")
 )
 
 
@@ -32,5 +32,5 @@ enem = (
     .mode("overwrite")
     .format("parquet")
     .partitionBy("year")
-    .save("s3://datalake-ney-igti-edc/staging/enem")
+    .save("s3://datalake-hrpp-igti-edc/staging/enem")
 )
