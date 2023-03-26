@@ -2,12 +2,12 @@ variable "aws_region" {
   default = "us-east-2"
 }
 
-variable "lambda_function_name" {
+variable "lambda_fun_name" {
   default = "IGTIexecutaEMRaovivo"
 }
 
 variable "key_pair_name" {
-  default = "ney-igti-teste"
+  default = "bit-igti-teste"
 }
 
 variable "airflow_subnet_id" {
